@@ -1,0 +1,8 @@
+URL: http://111.111.111.111:111/favicon.ico
+Protocol: http
+IP Address: 111.111.111.111
+Port: 111
+Path: /favicon.ico
+
+
+
