@@ -81,7 +81,7 @@ example = []
 if domain_urls:
     for url in domain_urls:
         ret = tld.get_fld(url,fix_protocol=True)
-        example .append(ret)
+        example.append(ret)
 else:
     print("输入路径有误")
 example  = list(set(example))  #set()函数将这个列表转换成集合，并自动去除重复的元素。最后，使用list()函数将集合转换回列表  把域名去重
