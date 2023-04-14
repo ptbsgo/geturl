@@ -11,11 +11,31 @@ sqlmap_path = r"C:\Python27\sqlmap"
 # 存储目标URL的文本文件路径
 urls_file = './tmp/output.txt'
 
+# 存储错误URL的文本文件路径
+out_err = './tmp/out_err.txt'
+
 # 读入文档提取url
 file_path = './tmp/urls.txt'
 
 # 代理地址
 PROXY_HTTP = "http://127.0.0.1:8080"
+
+
+
+
+# 定义一个函数，用于验证链接是否可访问
+def validate_url(url):
+    import requests
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+# 验证output_file_path文件中的链接是否可访问
 
 
 def extract_urls(file_path, urls_file):
@@ -30,10 +50,14 @@ def extract_urls(file_path, urls_file):
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
+    err_urls=[]
     # 正则表达式匹配完整URL和部分URL
     url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
     urls = re.findall(url_pattern, content)
-
+    for url in urls:
+        if not validate_url(url):
+            err_urls.append(url)
+            urls.remove(url)
     # 匹配部分URL，并拼接成完整URL
     for line in content.splitlines():
         if 'GET' in line or 'POST' in line:
@@ -50,11 +74,20 @@ def extract_urls(file_path, urls_file):
             else:
                 url_protocol = 'http://'
             url = url_protocol + url_host + url_path
-            urls.append(url)
+            if validate_url(url):
+                urls.append(url)
+            else:
+                err_urls.append(url)
+
 
     # 将URL写入输出文件中
     with open(urls_file, 'w', encoding='utf-8') as f:
         for url in urls:
+            f.write(url + '\n')
+
+    # 将错误URL写入输出文件err_url.txt
+    with open(out_err, 'w', encoding='utf-8') as f:
+        for url in err_urls:
             f.write(url + '\n')
 
 def run_sqlmap(sqlmap_path, urls_file):
