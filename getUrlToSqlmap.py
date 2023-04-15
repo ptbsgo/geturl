@@ -5,14 +5,18 @@
 # @Software: PyCharm
 # ---------CODE-------------
 import os
+import welcome as wc
+
+dirs = wc.mk_date_dir()
+
 # sqlmap安装路径
 sqlmap_path = r"C:\Python27\sqlmap"
 
 # 存储目标URL的文本文件路径
-urls_file = './tmp/output.txt'
+urls_file = dirs + '/output.txt'
 
 # 存储错误URL的文本文件路径
-out_err = './tmp/out_err.txt'
+out_err = dirs + '/out_err.txt'
 
 # 读入文档提取url
 file_path = './tmp/urls.txt'
@@ -22,6 +26,7 @@ PROXY_HTTP = "http://127.0.0.1:8080"
 
 # 设置全局代理
 SET_PROXY = "set ALL_PROXY=http://127.0.0.1:8080"
+
 
 
 # 定义一个函数，用于验证链接是否可访问
@@ -91,7 +96,7 @@ def extract_urls(file_path, urls_file):
         for url in err_urls:
             f.write(url + '\n')
 
-def run_sqlmap(sqlmap_path, urls_file):
+def run_sqlmap(sqlmap_path, urls_file,level):
     # 代理地址
     proxy_http = " --proxy=" + PROXY_HTTP
 
@@ -108,32 +113,19 @@ def run_sqlmap(sqlmap_path, urls_file):
     os.system(set_proxy)
     os.system(command)
 
-def clear():
-    os.system('cls' if os.name=='nt' else 'clear')
 
-def welcome():
-    clear()
-    print("****************************************************")
-    print("*                                                  *")
-    print("*          欢迎使用getUrlToSqlmap工具               *")
-    print("*                                                  *")
-    print("****************************************************")
-    print("\n")
 
-    print("注意：")
-    print("1. 请自行修改sqlmap路径")
-    print("2. 请把urls.txt文本放入同目录tmp文件夹")
-    print("\n\n")
 
 
 
 if __name__ == '__main__':
-    welcome()
+    wc.welcome("getUrlToSqlmap")
     y = input("是否先提取文件？Y/N")
     if y == "y" or y == "Y":
         extract_urls(file_path, urls_file)
     y = input("是否运行SQLMAP？Y/N")
     if y == "y" or y == "Y":
-        run_sqlmap(sqlmap_path, urls_file)
+        level = input("请输入sqlmap,level 等级：")
+        run_sqlmap(sqlmap_path, urls_file,level)
     else:
         print("bye!")
